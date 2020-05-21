@@ -8,6 +8,7 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.Types
+import javax.sql.DataSource
 
 abstract class JdbcDriver : SqlDriver {
   abstract fun getConnection(): Connection
@@ -66,6 +67,16 @@ abstract class JdbcDriver : SqlDriver {
         }
       }
       transactions.set(enclosingTransaction)
+    }
+  }
+
+  companion object {
+    operator fun invoke(dataSource: DataSource): JdbcDriver {
+      return object : JdbcDriver() {
+        override fun getConnection(): Connection {
+          return dataSource.connection
+        }
+      }
     }
   }
 }
